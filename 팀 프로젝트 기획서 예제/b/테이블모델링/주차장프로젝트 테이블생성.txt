@@ -1,0 +1,118 @@
+--현장현황테이블 12개 
+create table nowoffline( 
+offlinenum varchar2(20) primary key, --현장번호
+paymentnum varchar2(20) UNIQUE, --결제코드번호 (결제후)
+offlinespot varchar2(20) not null, --주차자리
+offlinename varchar2(50) not null, --이름
+offlinephone varchar2(20) not null, --전화번호
+offlinecarnum varchar2(50) not null, --차량번호
+offlineintime date default sysdate, --입차시간
+offlineouttime date, --퇴차시간
+offlinetime number, --이용시간
+offlinemoney number, --이용요금
+offlinediscount varchar2(50),--감면혜택
+offlineState number default 1 --현장상황 (퇴차0/입차1)
+); 
+
+--예약테이블 12개 
+create table booking( 
+bookingnum varchar2(20) primary key, --예약번호
+membernum number, --회원번호
+paymentnum varchar2(20) , --결제번호
+bookingstate number not null, --예약상황
+bookingname varchar2(50) not null, --예약자이름
+bookingphone varchar2(20) not null, --예약자전화번호
+bookingmoney number not null, --예약금액
+bookingdiscount varchar2(50), --감면혜택
+bookingspot varchar2(20) not null, --예약자리
+applicationdate date default sysdate, --신청날짜
+bookingdate date not null, --예약날짜
+bookingpolicy number not null ); --약관동의
+
+--멤버
+create table member(
+membernum number primary key,
+memberid varchar2(50) unique not null,
+memberpwd varchar2(100) not null,
+membername varchar2(50) not null,
+memberphone varchar2(20) not null,
+memberemail varchar2(50) not null,
+memberpolicy number not null,
+memberdate date default sysdate,
+membertype number default 1
+
+create sequence membernumseq
+start with 1
+increment by 1
+nocycle;
+);
+
+--관리자
+create table admin(
+adminnum number primary key,
+adminid varchar2(50) not null,
+adminpwd varchar2(100) not null
+);
+
+--결제
+create table payment(
+paymentnum varchar2(50) not null primary key, --결제 번호
+cardcompany varchar2(50) not null, -- 카드사 
+cardnum varchar(50) not null, -- 카드번호 
+cardvalid varchar(20) not null, -- 카드 유효기간
+cardcvc varchar2(20) not null, -- 카드cvc 
+paymentmoney number not null, -- 결제금액
+paymentpolicy number not null, -- 결제 약관동의
+paymentdate date default sysdate , -- 결제일
+paymenttype number not null, -- 결제 종류(1 예약,2 현장)
+paymentpenalty number default 0,  -- 차액부과금
+paymentstate number not null,  -- 결제 상태 (0 환불, 1 결제)
+bookingnum varchar2(50) null ,-- 예약 번호
+offlinenum varchar2(50) null  -- 현장 번호
+);
+
+--qna table 
+create table qna (
+qnanum number primary key,
+memberid varchar2(50) not null,
+qnatitle varchar2(250) not null,
+qnacontent clob not null,
+qnawritedate date default sysdate
+);
+
+-- qna sequence 
+create sequence qnanum_seq
+start with 1
+increment by 1
+nocycle;
+
+-- reply table 
+create table reply (
+replynum number primary key,
+qnanum number not null,
+adminid varchar2(50) not null,
+replycontent clob,
+replywritedate date default sysdate,
+constraint reply_fk foreign key(qnaNum) references qna(qnaNum)
+);
+
+--reply sequence 
+create sequence replynum_seq
+start with 1
+increment by 1
+nocycle;
+
+-- notice table 
+create table notice (
+noticenum number primary key,
+adminid varchar2(50) not null,
+noticetitle varchar2(50) not null,
+noticecontent clob not null,
+noticewritedate date default sysdate
+);
+
+--notice sequence 
+create sequence noticenum_seq
+start with 1
+increment by 1
+nocycle;
